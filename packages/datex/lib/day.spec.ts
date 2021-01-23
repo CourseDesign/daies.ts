@@ -30,9 +30,7 @@ describe("Day", () => {
   });
 
   test("diff", () => {
-    expect(new Day("1970-02-01").diff(new Day("1971-03-01"))).toEqual(
-      -31
-    );
+    expect(new Day("1970-02-01").diff(new Day("1971-03-01"))).toEqual(-31);
   });
 
   test("valueOf", () => {
