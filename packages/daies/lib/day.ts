@@ -24,14 +24,24 @@ class Day {
     }
   }
 
+  toYear(): Year {
+    return new Year(this.getYear());
+  }
+
+  toMonth(): Month {
+    return new Month(this.getMonth());
+  }
+
   getYear(): number {
     return this.date.getUTCFullYear();
   }
 
   setYear(year: number, month?: number, date?: number): number {
-    this.date.setUTCFullYear(year);
-    if (month != null) this.date.setUTCMonth(month);
-    if (date != null) this.date.setUTCDate(date);
+    this.date.setUTCFullYear(
+      year,
+      month ?? this.getMonth(),
+      date ?? this.getDate()
+    );
     return this.valueOf();
   }
 
@@ -40,8 +50,7 @@ class Day {
   }
 
   setMonth(month: number, date?: number): number {
-    this.date.setUTCMonth(month);
-    if (date != null) this.date.setUTCDate(date);
+    this.date.setUTCMonth(month, date ?? this.getDate());
     return this.valueOf();
   }
 
@@ -79,14 +88,6 @@ class Day {
     return `${this.toYear().toString()}-${this.toMonth().toString()}-${`0${this.getDate().toString()}`.slice(
       -2
     )}`;
-  }
-
-  toYear(): Year {
-    return new Year(this.getYear());
-  }
-
-  toMonth(): Month {
-    return new Month(this.getMonth());
   }
 }
 

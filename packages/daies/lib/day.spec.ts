@@ -23,7 +23,7 @@ describe("Day", () => {
     expect(new Day("1971-04-02").getMonth()).toEqual(3);
   });
 
-  test("setYear", () => {
+  test("setMonth", () => {
     const day = new Day("1970-02");
     day.setMonth(0);
     expect(day.getMonth()).toEqual(0);
