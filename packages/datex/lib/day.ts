@@ -49,7 +49,7 @@ class Day {
   constructor(value: DayLike);
   constructor(p1: YearLike | DayLike, p2?: MonthLike, p3?: number | string) {
     if (p2 != null && p3 != null) {
-      this.year = new Year(p1);
+      this.year = new Year(p1 as never);
       this.month = new Month(p2);
       this.day = parseDay(this.year, this.month, Number(p3));
     } else if (typeof p1 === "number") {
