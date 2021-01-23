@@ -12,7 +12,9 @@ class Day {
     if (p2 != null && p3 != null) {
       const year = new Year(p1 as never);
       const month = new Month(p2);
-      this.date = new Date(year.getYear(), month.getMonth(), Number(p3));
+      this.date = new Date(
+        Date.UTC(year.getYear(), month.getMonth(), Number(p3))
+      );
     } else if (typeof p1 === "number") {
       this.date = new Date(p1 * 24 * 60 * 60 * 1000);
     } else if (typeof p1 === "string") {
@@ -67,10 +69,6 @@ class Day {
   setDate(date: number): number {
     this.date.setUTCDate(date);
     return this.valueOf();
-  }
-
-  getDay(): number {
-    return this.date.getUTCDay();
   }
 
   diff(year: YearLike, month: MonthLike, day: number | string): number;

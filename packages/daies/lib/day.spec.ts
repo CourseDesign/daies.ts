@@ -29,9 +29,9 @@ describe("Day", () => {
     expect(day.getMonth()).toEqual(0);
   });
 
-  test("getDayOfWeek", () => {
-    expect(new Day("1970-01-01").getDay()).toEqual(4);
-    expect(new Day("1970-01-04").getDay()).toEqual(0);
+  test("getDate", () => {
+    expect(new Day("1970-01-01").getDate()).toEqual(1);
+    expect(new Day("1970-01-04").getDate()).toEqual(4);
   });
 
   test("diff", () => {
