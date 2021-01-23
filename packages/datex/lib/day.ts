@@ -62,6 +62,7 @@ class Day {
       this.month = new Month(month);
       validateDay(this.year, this.month, day);
       this.day = day;
+      this.value = p1;
     } else if (typeof p1 === "string") {
       const date = new Date(p1);
       this.year = new Year(date.getFullYear());
