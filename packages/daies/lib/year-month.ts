@@ -19,52 +19,62 @@ function getValue(year: Year, month: Month): number {
 export type YearMonthLike = number | string | YearMonth;
 
 class YearMonth {
-  private readonly year: Year;
-
-  private readonly month: Month;
+  private value: number;
 
   constructor(year: YearLike, month: MonthLike);
   constructor(value: YearMonthLike);
   constructor(p1: YearLike | YearMonthLike, p2?: MonthLike) {
     if (p2 != null) {
-      this.year = new Year(p1 as never);
-      this.month = new Month(p2);
+      this.value = getValue(new Year(p1 as never), new Month(p2));
     } else if (typeof p1 === "number") {
-      this.year = new Year(getYear(p1));
-      this.month = new Month(getMonth(p1));
+      this.value = p1;
     } else if (typeof p1 === "string") {
       const date = new Date(p1);
-      this.year = new Year(date.getFullYear());
-      this.month = new Month(date.getMonth());
+      this.value = getValue(
+        new Year(date.getUTCFullYear()),
+        new Month(date.getUTCMonth())
+      );
     } else if (p1 instanceof YearMonth) {
-      this.year = p1.toYear();
-      this.month = p1.toMonth();
+      this.value = p1.valueOf();
     } else {
       throw new TypeError("invalid argument");
     }
   }
 
-  getYear(): number {
-    return this.year.getYear();
+  toString(): string {
+    return `${this.toYear().toString()}-${this.toMonth().toString()}`;
   }
 
-  setYear(year: number, month?: number): number {
-    this.year.setYear(year);
-    if (month != null) this.month.setMonth(month);
-    return this.valueOf();
+  toYear(): Year {
+    return new Year(this.getYear());
   }
 
-  getMonth(): number {
-    return this.month.getMonth();
-  }
-
-  setMonth(month: number): number {
-    this.month.setMonth(month);
-    return this.valueOf();
+  toMonth(): Month {
+    return new Month(this.getMonth());
   }
 
   getDays(): number {
     return new Date(this.getYear(), this.getMonth(), 0).getDate();
+  }
+
+  getMonth(): number {
+    return getMonth(this.value);
+  }
+
+  setMonth(month: number): number {
+    const newYearMonth = new YearMonth(this.getYear(), month);
+    this.value = newYearMonth.valueOf();
+    return this.valueOf();
+  }
+
+  getYear(): number {
+    return getYear(this.value);
+  }
+
+  setYear(year: number, month?: number): number {
+    const newYearMonth = new YearMonth(year, month ?? this.getMonth());
+    this.value = newYearMonth.valueOf();
+    return this.valueOf();
   }
 
   diff(year: YearLike, month: MonthLike): number;
@@ -77,19 +87,7 @@ class YearMonth {
   }
 
   valueOf(): number {
-    return getValue(this.year, this.month);
-  }
-
-  toString(): string {
-    return `${this.year.toString()}-${this.month.toString()}`;
-  }
-
-  toYear(): Year {
-    return new Year(this.year);
-  }
-
-  toMonth(): Month {
-    return new Month(this.month);
+    return this.value;
   }
 }
 
