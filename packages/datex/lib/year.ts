@@ -31,6 +31,14 @@ class Year {
     return this.value;
   }
 
+  getDays(): number {
+    let total = 0;
+    for (let month = 0; month < 12; month += 1) {
+      total += new Date(this.getYear(), month, 0).getDate();
+    }
+    return total;
+  }
+
   diff(year: YearLike): number {
     return this.valueOf() - new Year(year).valueOf();
   }
