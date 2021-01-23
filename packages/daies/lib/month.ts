@@ -1,14 +1,14 @@
+import MonthData from "./month-data";
+
 function calculateMonth(value: number | string): number {
   const parsed = typeof value === "string" ? Number(value) - 1 : value;
   return (parsed + 12) % 12;
 }
 
-export type MonthLike = number | string | Month;
-
-class Month {
+class Month implements MonthData {
   private value: number;
 
-  constructor(value: MonthLike) {
+  constructor(value: number | string | Month) {
     if (value instanceof Month) {
       this.value = value.getMonth();
     } else {
@@ -25,8 +25,8 @@ class Month {
     return this.value;
   }
 
-  diff(month: MonthLike): number {
-    return this.valueOf() - new Month(month).valueOf();
+  diff(month: MonthData): number {
+    return this.valueOf() - month.getMonth();
   }
 
   subtract(value: number): Month {
