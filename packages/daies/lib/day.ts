@@ -1,28 +1,24 @@
-import Year, { YearLike } from "./year";
-import Month, { MonthLike } from "./month";
+import Year from "./year";
+import Month from "./month";
+import YearData from "./year-data";
+import MonthData from "./month-data";
+import DateData from "./date-data";
 
-export type DayLike = number | string | Day;
-
-class Day {
+class Day implements YearData, MonthData, DateData {
   private date: Date;
 
-  constructor(year: YearLike, month: MonthLike, day: number | string);
-  constructor(value: DayLike);
-  constructor(p1: YearLike | DayLike, p2?: MonthLike, p3?: number | string) {
+  constructor(year: number, month: number, day: number);
+  constructor(value: number | string | Day);
+  constructor(p1: number | string | Day, p2?: number, p3?: number) {
     if (p2 != null && p3 != null) {
-      const year = new Year(p1 as never);
-      const month = new Month(p2);
-      this.date = new Date(
-        Date.UTC(year.getYear(), month.getMonth(), Number(p3))
-      );
+      this.date = new Date(Date.UTC(p1 as number, p2, p3));
     } else if (typeof p1 === "number") {
       this.date = new Date(p1 * 24 * 60 * 60 * 1000);
     } else if (typeof p1 === "string") {
       this.date = new Date(p1);
-    } else if (p1 instanceof Day) {
-      this.date = new Date(p1.valueOf() * 24 * 60 * 60 * 1000);
+      this.date.setUTCHours(0, 0, 0, 0);
     } else {
-      throw new TypeError("invalid argument");
+      this.date = new Date(p1.valueOf() * 24 * 60 * 60 * 1000);
     }
   }
 
@@ -50,7 +46,7 @@ class Day {
       month ?? this.getMonth(),
       date ?? this.getDate()
     );
-    return this.valueOf();
+    return this.getYear();
   }
 
   getMonth(): number {
@@ -59,7 +55,7 @@ class Day {
 
   setMonth(month: number, date?: number): number {
     this.date.setUTCMonth(month, date ?? this.getDate());
-    return this.valueOf();
+    return this.getMonth();
   }
 
   getDate(): number {
@@ -68,19 +64,17 @@ class Day {
 
   setDate(date: number): number {
     this.date.setUTCDate(date);
-    return this.valueOf();
+    return this.getDate();
   }
 
-  diff(year: YearLike, month: MonthLike, day: number | string): number;
-  diff(value: number | string | Day): number;
-  diff(
-    p1: YearLike | number | string | Day,
-    p2?: MonthLike,
-    p3?: number | string
-  ): number {
+  getDay(): number {
+    return this.date.getUTCDay();
+  }
+
+  diff(date: YearData & MonthData & DateData): number {
     return (
       this.valueOf() -
-      (p1 instanceof Day ? p1 : new Day(p1, p2 as never, p3 as never)).valueOf()
+      new Day(date.getYear(), date.getMonth(), date.getDate()).valueOf()
     );
   }
 

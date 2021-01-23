@@ -34,6 +34,10 @@ describe("Day", () => {
     expect(new Day("1970-01-04").getDate()).toEqual(4);
   });
 
+  test("getDay", () => {
+    expect(new Day("2021-01-23").getDay()).toEqual(6);
+  });
+
   test("diff", () => {
     expect(new Day("1970-02-01").diff(new Day("1970-02-02"))).toEqual(-1);
     expect(new Day("1970-02-01").diff(new Day("1971-02-01"))).toEqual(-365);

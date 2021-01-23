@@ -1,16 +1,10 @@
-import Year from "./year";
 import YearMonth from "./year-month";
-import Month from "./month";
 
 describe("YearMonth", () => {
   test("constructor", () => {
     expect(new YearMonth(0).toString()).toEqual("1970-01");
     expect(new YearMonth("1970-02").toString()).toEqual("1970-02");
-    expect(new YearMonth("1970", "03").toString()).toEqual("1970-03");
-    expect(new YearMonth(new Year("1970"), "04").toString()).toEqual("1970-04");
-    expect(new YearMonth(new Year("1970"), new Month("05")).toString()).toEqual(
-      "1970-05"
-    );
+    expect(new YearMonth(1970, 2).toString()).toEqual("1970-03");
   });
 
   test("getYear", () => {

@@ -1,3 +1,5 @@
+import YearData from "./year-data";
+
 function calculateYear(value: number | string): number {
   const parsed = Number(value);
   if (parsed < 0) {
@@ -9,12 +11,10 @@ function calculateYear(value: number | string): number {
   return parsed;
 }
 
-export type YearLike = number | string | Year;
-
-class Year {
+class Year implements YearData {
   private value: number;
 
-  constructor(value: YearLike) {
+  constructor(value: number | string | Year) {
     if (value instanceof Year) {
       this.value = value.getYear();
     } else {
@@ -39,8 +39,8 @@ class Year {
     return total;
   }
 
-  diff(year: YearLike): number {
-    return this.valueOf() - new Year(year).valueOf();
+  diff(year: YearData): number {
+    return this.valueOf() - year.getYear();
   }
 
   subtract(value: number): Year {
