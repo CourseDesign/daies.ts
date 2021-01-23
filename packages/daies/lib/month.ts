@@ -1,13 +1,6 @@
 function calculateMonth(value: number | string): number {
   const parsed = typeof value === "string" ? Number(value) - 1 : value;
-  if (parsed < 0) {
-    throw new TypeError("value must be greater than and equal 0");
-  }
-  if (parsed > 11) {
-    throw new TypeError("value must be less than 12");
-  }
-
-  return parsed;
+  return (parsed + 12) % 12;
 }
 
 export type MonthLike = number | string | Month;

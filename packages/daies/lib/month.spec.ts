@@ -2,9 +2,7 @@ import Month from "./month";
 
 describe("Month", () => {
   test("constructor", () => {
-    expect(() => new Month(-1)).toThrow(TypeError);
-    expect(() => new Month(12)).toThrow(TypeError);
-
+    expect(new Month(-1).getMonth()).toEqual(11);
     expect(new Month(1).getMonth()).toEqual(1);
     expect(new Month("1").getMonth()).toEqual(0);
   });
