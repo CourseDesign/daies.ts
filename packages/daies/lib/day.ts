@@ -135,7 +135,9 @@ class Day {
   }
 
   toString(): string {
-    return `${this.year}-${this.month}-${`0${this.day.toString()}`.slice(-2)}`;
+    return `${this.year.toString()}-${this.month.toString()}-${`0${this.day.toString()}`.slice(
+      -2
+    )}`;
   }
 
   toYear(): Year {

@@ -81,7 +81,7 @@ class YearMonth {
   }
 
   toString(): string {
-    return `${this.year}-${this.month}`;
+    return `${this.year.toString()}-${this.month.toString()}`;
   }
 
   toYear(): Year {
