@@ -34,6 +34,8 @@ function getValue(year: Year, month: Month, day: number): number {
   return current + day - 1;
 }
 
+export type DayLike = number | string | Day;
+
 class Day {
   private readonly year: Year;
 
@@ -44,9 +46,9 @@ class Day {
   private value?: number;
 
   constructor(year: YearLike, month: MonthLike, day: number | string);
-  constructor(value: number | string);
+  constructor(value: DayLike);
   constructor(
-    p1: YearLike | number | string,
+    p1: YearLike | DayLike,
     p2?: MonthLike,
     p3?: number | string
   ) {
@@ -65,6 +67,10 @@ class Day {
       this.year = new Year(date.getFullYear());
       this.month = new Month(date.getMonth());
       this.day = date.getDate();
+    } else if (p1 instanceof Day) {
+      this.year = p1.toYear();
+      this.month = p1.toMonth();
+      this.day = p1.getDay();
     } else {
       throw new TypeError("invalid argument");
     }

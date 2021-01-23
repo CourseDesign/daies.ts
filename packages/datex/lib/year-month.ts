@@ -16,16 +16,18 @@ function getValue(year: Year, month: Month): number {
   return (year.getYear() - 1970) * 12 + month.getMonth();
 }
 
+export type YearMonthLike = number | string | YearMonth;
+
 class YearMonth {
   private readonly year: Year;
 
   private readonly month: Month;
 
   constructor(year: YearLike, month: MonthLike);
-  constructor(value: number | string);
-  constructor(p1: YearLike | number | string, p2?: MonthLike) {
+  constructor(value: YearMonthLike);
+  constructor(p1: YearLike | YearMonthLike, p2?: MonthLike) {
     if (p2 != null) {
-      this.year = new Year(p1);
+      this.year = new Year(p1 as never);
       this.month = new Month(p2);
     } else if (typeof p1 === "number") {
       this.year = new Year(getYear(p1));
@@ -34,6 +36,9 @@ class YearMonth {
       const date = new Date(p1);
       this.year = new Year(date.getFullYear());
       this.month = new Month(date.getMonth());
+    } else if (p1 instanceof YearMonth) {
+      this.year = p1.toYear();
+      this.month = p1.toMonth();
     } else {
       throw new TypeError("invalid argument");
     }
