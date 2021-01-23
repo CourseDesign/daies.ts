@@ -29,8 +29,15 @@ describe("Day", () => {
     expect(day.getMonth()).toEqual(0);
   });
 
+  test("getDayOfWeek", () => {
+    expect(new Day("1970-01-01").getDay()).toEqual(4);
+    expect(new Day("1970-01-04").getDay()).toEqual(0);
+  });
+
   test("diff", () => {
-    expect(new Day("1970-02-01").diff(new Day("1971-03-01"))).toEqual(-396);
+    expect(new Day("1970-02-01").diff(new Day("1970-02-02"))).toEqual(-1);
+    expect(new Day("1970-02-01").diff(new Day("1971-02-01"))).toEqual(-365);
+    expect(new Day("1970-02-01").diff(new Day("1971-03-01"))).toEqual(-393);
   });
 
   test("valueOf", () => {

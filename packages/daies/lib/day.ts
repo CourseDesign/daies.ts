@@ -1,44 +1,10 @@
 import Year, { YearLike } from "./year";
 import Month, { MonthLike } from "./month";
-import YearMonth from "./year-month";
-
-function getYearAndMonthAndDay(value: number): [number, number, number] {
-  let current = 0;
-  for (let year = 1970; ; year += 1) {
-    for (let month = 0; month < 12; month += 1) {
-      const currentDays = new YearMonth(year, month).getDays();
-      if (current + currentDays > value) {
-        return [year, month, value - current + 1];
-      }
-      current += currentDays;
-    }
-  }
-}
-
-// 1970-01-01 => 0
-// 1970-01-02 => 1
-function getValue(year: Year, month: Month, day: number): number {
-  let current = 0;
-  for (let i = 1970; i < year.getYear(); i += 1) {
-    current += new Year(i).getDays();
-  }
-  for (let i = 0; i < month.getMonth(); i += 1) {
-    current += new YearMonth(year, i).getDays();
-  }
-
-  return current + day - 1;
-}
 
 export type DayLike = number | string | Day;
 
 class Day {
-  private year: Year;
-
-  private month: Month;
-
-  private day: number;
-
-  private value: number;
+  private date: Date;
 
   constructor(year: YearLike, month: MonthLike, day: number | string);
   constructor(value: DayLike);
@@ -46,72 +12,50 @@ class Day {
     if (p2 != null && p3 != null) {
       const year = new Year(p1 as never);
       const month = new Month(p2);
-      this.value = getValue(year, month, Number(p3));
+      this.date = new Date(year.getYear(), month.getMonth(), Number(p3));
     } else if (typeof p1 === "number") {
-      this.value = p1;
+      this.date = new Date(p1 * 24 * 60 * 60 * 1000);
     } else if (typeof p1 === "string") {
-      const date = new Date(p1);
-      this.value = getValue(
-        new Year(date.getFullYear()),
-        new Month(date.getMonth()),
-        date.getDate()
-      );
+      this.date = new Date(p1);
     } else if (p1 instanceof Day) {
-      this.value = getValue(p1.toYear(), p1.toMonth(), p1.getDay());
+      this.date = new Date(p1.valueOf() * 24 * 60 * 60 * 1000);
     } else {
       throw new TypeError("invalid argument");
     }
-
-    const [year, month, day] = getYearAndMonthAndDay(this.value);
-    this.year = new Year(year);
-    this.month = new Month(month);
-    this.day = day;
   }
 
   getYear(): number {
-    return this.year?.getYear() ?? 0;
+    return this.date.getUTCFullYear();
   }
 
-  setYear(year: number, month?: number): number {
-    this.value = getValue(
-      new Year(year),
-      month != null ? new Month(month) : this.month,
-      this.day
-    );
-    this.update();
+  setYear(year: number, month?: number, date?: number): number {
+    this.date.setUTCFullYear(year);
+    if (month != null) this.date.setUTCMonth(month);
+    if (date != null) this.date.setUTCDate(date);
     return this.valueOf();
   }
 
   getMonth(): number {
-    return this.month.getMonth();
+    return this.date.getUTCMonth();
   }
 
-  setMonth(month: number): number {
-    this.value = getValue(
-      this.year,
-      month != null ? new Month(month) : this.month,
-      this.day
-    );
-    this.update();
+  setMonth(month: number, date?: number): number {
+    this.date.setUTCMonth(month);
+    if (date != null) this.date.setUTCDate(date);
+    return this.valueOf();
+  }
+
+  getDate(): number {
+    return this.date.getDate();
+  }
+
+  setDate(date: number): number {
+    this.date.setUTCDate(date);
     return this.valueOf();
   }
 
   getDay(): number {
-    return this.day;
-  }
-
-  setDay(day: number): number {
-    this.value = getValue(this.year, this.month, day);
-    this.update();
-    return this.valueOf();
-  }
-
-  getDayOfWeek(): number {
-    return new Date(
-      this.year.getYear(),
-      this.month.getMonth(),
-      this.day
-    ).getDay();
+    return this.date.getDay();
   }
 
   diff(year: YearLike, month: MonthLike, day: number | string): number;
@@ -128,31 +72,21 @@ class Day {
   }
 
   valueOf(): number {
-    if (this.value == null) {
-      this.value = getValue(this.year, this.month, this.day);
-    }
-    return this.value;
+    return Math.floor(this.date.getTime() / 1000 / 60 / 60 / 24);
   }
 
   toString(): string {
-    return `${this.year.toString()}-${this.month.toString()}-${`0${this.day.toString()}`.slice(
+    return `${this.toYear().toString()}-${this.toMonth().toString()}-${`0${this.getDate().toString()}`.slice(
       -2
     )}`;
   }
 
   toYear(): Year {
-    return new Year(this.year);
+    return new Year(this.getYear());
   }
 
   toMonth(): Month {
-    return new Month(this.month);
-  }
-
-  private update() {
-    const [year, month, day] = getYearAndMonthAndDay(this.value);
-    this.year = new Year(year);
-    this.month = new Month(month);
-    this.day = day;
+    return new Month(this.getMonth());
   }
 }
 
