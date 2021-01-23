@@ -2,11 +2,6 @@ import Year, { YearLike } from "./year";
 import Month, { MonthLike } from "./month";
 import YearMonth from "./year-month";
 
-function parseDay(year: Year, month: Month, day: number): number {
-  const days = new YearMonth(year, month).getDays();
-  return (day + days) % (days + 1);
-}
-
 function getYearAndMonthAndDay(value: number): [number, number, number] {
   let current = 0;
   for (let year = 1970; ; year += 1) {
@@ -24,7 +19,7 @@ function getYearAndMonthAndDay(value: number): [number, number, number] {
 // 1970-01-02 => 1
 function getValue(year: Year, month: Month, day: number): number {
   let current = 0;
-  for (let i = 1970; i < year.getYear() - 1; i += 1) {
+  for (let i = 1970; i < year.getYear(); i += 1) {
     current += new Year(i).getDays();
   }
   for (let i = 0; i < month.getMonth(); i += 1) {
@@ -37,49 +32,53 @@ function getValue(year: Year, month: Month, day: number): number {
 export type DayLike = number | string | Day;
 
 class Day {
-  private readonly year: Year;
+  private year: Year;
 
-  private readonly month: Month;
+  private month: Month;
 
   private day: number;
 
-  private value?: number;
+  private value: number;
 
   constructor(year: YearLike, month: MonthLike, day: number | string);
   constructor(value: DayLike);
   constructor(p1: YearLike | DayLike, p2?: MonthLike, p3?: number | string) {
     if (p2 != null && p3 != null) {
-      this.year = new Year(p1 as never);
-      this.month = new Month(p2);
-      this.day = parseDay(this.year, this.month, Number(p3));
+      const year = new Year(p1 as never);
+      const month = new Month(p2);
+      this.value = getValue(year, month, Number(p3));
     } else if (typeof p1 === "number") {
-      const [year, month, day] = getYearAndMonthAndDay(p1);
-      this.year = new Year(year);
-      this.month = new Month(month);
-      this.day = day;
       this.value = p1;
     } else if (typeof p1 === "string") {
       const date = new Date(p1);
-      this.year = new Year(date.getFullYear());
-      this.month = new Month(date.getMonth());
-      this.day = date.getDate();
+      this.value = getValue(
+        new Year(date.getFullYear()),
+        new Month(date.getMonth()),
+        date.getDate()
+      );
     } else if (p1 instanceof Day) {
-      this.year = p1.toYear();
-      this.month = p1.toMonth();
-      this.day = p1.getDay();
+      this.value = getValue(p1.toYear(), p1.toMonth(), p1.getDay());
     } else {
       throw new TypeError("invalid argument");
     }
+
+    const [year, month, day] = getYearAndMonthAndDay(this.value);
+    this.year = new Year(year);
+    this.month = new Month(month);
+    this.day = day;
   }
 
   getYear(): number {
-    return this.year.getYear();
+    return this.year?.getYear() ?? 0;
   }
 
   setYear(year: number, month?: number): number {
-    this.value = undefined;
-    this.year.setYear(year);
-    if (month != null) this.month.setMonth(month);
+    this.value = getValue(
+      new Year(year),
+      month != null ? new Month(month) : this.month,
+      this.day
+    );
+    this.update();
     return this.valueOf();
   }
 
@@ -88,8 +87,12 @@ class Day {
   }
 
   setMonth(month: number): number {
-    this.value = undefined;
-    this.month.setMonth(month);
+    this.value = getValue(
+      this.year,
+      month != null ? new Month(month) : this.month,
+      this.day
+    );
+    this.update();
     return this.valueOf();
   }
 
@@ -98,9 +101,17 @@ class Day {
   }
 
   setDay(day: number): number {
-    this.value = undefined;
-    this.day = parseDay(this.year, this.month, day);
+    this.value = getValue(this.year, this.month, day);
+    this.update();
     return this.valueOf();
+  }
+
+  getDayOfWeek(): number {
+    return new Date(
+      this.year.getYear(),
+      this.month.getMonth(),
+      this.day
+    ).getDay();
   }
 
   diff(year: YearLike, month: MonthLike, day: number | string): number;
@@ -133,6 +144,13 @@ class Day {
 
   toMonth(): Month {
     return new Month(this.month);
+  }
+
+  private update() {
+    const [year, month, day] = getYearAndMonthAndDay(this.value);
+    this.year = new Year(year);
+    this.month = new Month(month);
+    this.day = day;
   }
 }
 
