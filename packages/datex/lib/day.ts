@@ -47,11 +47,7 @@ class Day {
 
   constructor(year: YearLike, month: MonthLike, day: number | string);
   constructor(value: DayLike);
-  constructor(
-    p1: YearLike | DayLike,
-    p2?: MonthLike,
-    p3?: number | string
-  ) {
+  constructor(p1: YearLike | DayLike, p2?: MonthLike, p3?: number | string) {
     if (p2 != null && p3 != null) {
       this.year = new Year(p1);
       this.month = new Month(p2);
