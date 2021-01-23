@@ -14,8 +14,8 @@ function getMonth(value: number): number {
 // 1970-01 => 0
 // 1970-12 => 11
 // 1971-01 => 12
-function getValue(year: YearData, month: MonthData): number {
-  return (year.getYear() - 1970) * 12 + month.getMonth();
+function getValue(year: number, month: number): number {
+  return (year - 1970) * 12 + month;
 }
 
 class YearMonth implements YearData, MonthData {
@@ -25,15 +25,12 @@ class YearMonth implements YearData, MonthData {
   constructor(value: number | string | YearMonth);
   constructor(p1: number | string | YearMonth, p2?: number) {
     if (p2 != null) {
-      this.value = getValue(new Year(p1 as never), new Month(p2));
+      this.value = getValue(new Year(p1 as number).getYear(), p2);
     } else if (typeof p1 === "number") {
       this.value = p1;
     } else if (typeof p1 === "string") {
       const date = new Date(p1);
-      this.value = getValue(
-        new Year(date.getUTCFullYear()),
-        new Month(date.getUTCMonth())
-      );
+      this.value = getValue(date.getUTCFullYear(), date.getUTCMonth());
     } else {
       this.value = p1.valueOf();
     }
@@ -76,7 +73,7 @@ class YearMonth implements YearData, MonthData {
   }
 
   diff(yearMonth: YearData & MonthData): number {
-    return this.valueOf() - getValue(yearMonth, yearMonth);
+    return this.valueOf() - getValue(yearMonth.getYear(), yearMonth.getMonth());
   }
 
   valueOf(): number {
