@@ -2,11 +2,9 @@ import Year, { YearLike } from "./year";
 import Month, { MonthLike } from "./month";
 import YearMonth from "./year-month";
 
-function validateDay(year: Year, month: Month, day: number) {
+function parseDay(year: Year, month: Month, day: number): number {
   const days = new YearMonth(year, month).getDays();
-  if (day < 1 || day > days) {
-    throw new TypeError(`day must be between 1 and ${days}`);
-  }
+  return (day + days) % (days + 1);
 }
 
 function getYearAndMonthAndDay(value: number): [number, number, number] {
@@ -55,12 +53,11 @@ class Day {
     if (p2 != null && p3 != null) {
       this.year = new Year(p1);
       this.month = new Month(p2);
-      this.day = Number(p3);
+      this.day = parseDay(this.year, this.month, Number(p3));
     } else if (typeof p1 === "number") {
       const [year, month, day] = getYearAndMonthAndDay(p1);
       this.year = new Year(year);
       this.month = new Month(month);
-      validateDay(this.year, this.month, day);
       this.day = day;
       this.value = p1;
     } else if (typeof p1 === "string") {
@@ -99,9 +96,8 @@ class Day {
   }
 
   setDay(day: number): number {
-    validateDay(this.year, this.month, day);
     this.value = undefined;
-    this.day = day;
+    this.day = parseDay(this.year, this.month, day);
     return this.valueOf();
   }
 
