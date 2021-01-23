@@ -24,6 +24,12 @@ class Day {
     }
   }
 
+  toString(): string {
+    return `${this.toYear().toString()}-${this.toMonth().toString()}-${`0${this.getDate().toString()}`.slice(
+      -2
+    )}`;
+  }
+
   toYear(): Year {
     return new Year(this.getYear());
   }
@@ -55,7 +61,7 @@ class Day {
   }
 
   getDate(): number {
-    return this.date.getDate();
+    return this.date.getUTCDate();
   }
 
   setDate(date: number): number {
@@ -64,7 +70,7 @@ class Day {
   }
 
   getDay(): number {
-    return this.date.getDay();
+    return this.date.getUTCDay();
   }
 
   diff(year: YearLike, month: MonthLike, day: number | string): number;
@@ -82,12 +88,6 @@ class Day {
 
   valueOf(): number {
     return Math.floor(this.date.getTime() / 1000 / 60 / 60 / 24);
-  }
-
-  toString(): string {
-    return `${this.toYear().toString()}-${this.toMonth().toString()}-${`0${this.getDate().toString()}`.slice(
-      -2
-    )}`;
   }
 }
 
